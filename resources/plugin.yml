@@ -1,0 +1,23 @@
+name: SeePvPArea
+version: '1.2'
+main: ru.gortexdev.seepvparea.SeePvPArea
+api-version: '1.16'
+load: STARTUP
+authors: [GDev]
+website: https://seemine.su , https://gdev.pro
+commands:
+  seepvparea:
+    description: Управление PvP ареной
+    usage: /<command> <subcommand>
+    permission: seepvparea.admin
+    aliases: [pvparea]
+  pvpent:
+    description: Вход на PvP арену
+    usage: /<command>
+  pvpext:
+    description: Выход с PvP арены
+    usage: /<command>
+permissions:
+  seepvparea.admin:
+    description: Дает доступ к админ-командам плагина
+    default: op

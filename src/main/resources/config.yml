@@ -1,0 +1,112 @@
+settings:
+  entrance:
+    command: /pvpent
+    checks:
+      armor_check:
+        enable: true
+        types:
+          - helmet
+          - chestplate
+          - leggings
+          - boots
+        error-message:
+          - '&cНаденьте полный комплект брони!'
+      hp_check:
+        enable: true
+        minimal_hp: 14
+        error-message:
+          - '&cУ вас недостаточно здоровья!'
+      weapon_check:
+        enable: true
+        type:
+          - sword
+          - axe
+        error-message:
+          - '&cВозьмите меч или топор!'
+    declined:
+      BossBar:
+        BossBar: '&cВход на арену отклонен!'
+        type: SEGMENTED_10
+        enable: true
+      Title:
+        Title: '&cОшибка!'
+        SubTitle: '&7Проверьте требования'
+        enable: true
+      Message:
+        Message:
+          - '&cВы не прошли проверки для входа на арену!'
+        enable: true
+    accepted:
+      BossBar:
+        BossBar: '&aДобро пожаловать на арену!'
+        type: SEGMENTED_10
+        enable: true
+      Title:
+        Title: '&aУспешно!'
+        SubTitle: '&7Вы на арене'
+        enable: true
+      Message:
+        Message:
+          - '&aВы успешно вошли на арену!'
+        enable: true
+  exit:
+    command: /pvpext
+    checks:
+      anti_relog_check:
+        enable: true
+        pvp_mode: true
+        error-message:
+          - '&cВы не можете выйти во время боя!'
+    declined:
+      BossBar:
+        BossBar: '&cВыход с арены отклонен!'
+        type: SEGMENTED_10
+        enable: true
+      Title:
+        Title: '&cОшибка!'
+        SubTitle: '&7Проверьте требования'
+        enable: true
+      Message:
+        Message:
+          - '&cВы не прошли проверки для выхода с арены!'
+        enable: true
+    accepted:
+      BossBar:
+        BossBar: '&aВы покинули арену!'
+        type: SEGMENTED_10
+        enable: true
+      Title:
+        Title: '&aУспешно!'
+        SubTitle: '&7Вы вне арены'
+        enable: true
+      Message:
+        Message:
+          - '&aВы успешно вышли с арены!'
+        enable: true
+  anti_relog:
+    duration: 30 # Длительность антирелога в секундах
+    disabled_regions:
+      - spawn
+    delays:
+      golden_apple: 10
+      enchanted_golden_apple: 10
+      chorus_fruit: 10
+      ender_pearl: 10
+    relog_entrance:
+      Title:
+        Title: '&cБой начался!'
+        SubTitle: '&7Антирелог активирован'
+        enable: true
+      Message:
+        Message:
+          - '&cТеперь вы в режиме боя!'
+        enable: true
+    relog_exit:
+      BossBar:
+        BossBar: '&aБой окончен!'
+        type: SEGMENTED_10
+        enable: true
+      Title:
+        Title: '&aУспешно!'
+        SubTitle: '&7Антирелог деактивирован'
+        enable: true
