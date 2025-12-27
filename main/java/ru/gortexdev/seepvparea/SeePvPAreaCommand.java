@@ -22,11 +22,11 @@ public class SeePvPAreaCommand implements TabExecutor {
         }
         if (args[0].equalsIgnoreCase("reload")) {
             if (!sender.hasPermission("seepvparea.admin")) {
-                sender.sendMessage("&cУ вас нет прав на эту команду!");
+                sender.sendMessage(plugin.color("&cУ вас нет прав на эту команду!"));
                 return true;
             }
-            this.plugin.reloadConfiguration();
-            sender.sendMessage("&aКонфигурация успешно перезагружена!");
+            plugin.reloadConfiguration();
+            sender.sendMessage(plugin.color("&aКонфигурация успешно перезагружена!"));
             return true;
         }
         if (!args[0].equalsIgnoreCase("set")) {
@@ -34,12 +34,12 @@ public class SeePvPAreaCommand implements TabExecutor {
             return true;
         }
         if (!(sender instanceof Player)) {
-            sender.sendMessage("&cЭта команда только для игроков!");
+            sender.sendMessage(plugin.color("&cЭта команда только для игроков!"));
             return true;
         }
         Player player = (Player)sender;
         if (!player.hasPermission("seepvparea.admin")) {
-            player.sendMessage("&cУ вас нет прав на эту команду!");
+            player.sendMessage(plugin.color("&cУ вас нет прав на эту команду!"));
             return true;
         }
         if (args.length != 2) {
@@ -52,8 +52,8 @@ public class SeePvPAreaCommand implements TabExecutor {
             return true;
         }
         Location location = player.getLocation();
-        this.plugin.saveLocation(locationName, location);
-        player.sendMessage("&aТочка " + locationName + " успешно установлена!");
+        plugin.saveLocation(locationName, location);
+        player.sendMessage(plugin.color("&aТочка " + locationName + " успешно установлена!"));
         return true;
     }
 

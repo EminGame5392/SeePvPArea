@@ -47,18 +47,18 @@ public class ItemDelayManagerImpl implements ItemDelayManager {
     @Override
     public int getDelayForMaterial(Material material) {
         FileConfiguration config = plugin.getConfig();
+        String materialName = material.name().toLowerCase();
 
-        switch (material) {
-            case GOLDEN_APPLE:
-                return config.getInt("settings.anti_relog.delays.golden_apple", 10);
-            case ENCHANTED_GOLDEN_APPLE:
+        if (materialName.contains("golden_apple")) {
+            if (materialName.contains("enchanted")) {
                 return config.getInt("settings.anti_relog.delays.enchanted_golden_apple", 10);
-            case CHORUS_FRUIT:
-                return config.getInt("settings.anti_relog.delays.chorus_fruit", 10);
-            case ENDER_PEARL:
-                return config.getInt("settings.anti_relog.delays.ender_pearl", 10);
-            default:
-                return 0;
+            }
+            return config.getInt("settings.anti_relog.delays.golden_apple", 10);
+        } else if (materialName.contains("chorus")) {
+            return config.getInt("settings.anti_relog.delays.chorus_fruit", 10);
+        } else if (materialName.contains("ender_pearl")) {
+            return config.getInt("settings.anti_relog.delays.ender_pearl", 10);
         }
+        return 0;
     }
 }

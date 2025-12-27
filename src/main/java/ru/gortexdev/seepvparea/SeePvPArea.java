@@ -26,7 +26,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import ru.gortexdev.seepvparea.api.SeePvPAreaAPI;
@@ -93,10 +92,10 @@ public class SeePvPArea extends JavaPlugin implements Listener {
         PluginCommand command = getCommand(commandName);
         if (command != null) {
             command.setExecutor(executor);
-            if (executor instanceof org.bukkit.command.TabExecutor)
+            if (executor instanceof TabCompleter)
                 command.setTabCompleter((TabCompleter)executor);
         } else {
-            getLogger().warning("&cНе удалось зарегестрировать команду: " + commandName + ". Проверьте plugin.yml!");
+            getLogger().warning("&cНе удалось зарегистрировать команду: " + commandName + ". Проверьте plugin.yml!");
         }
     }
 
@@ -115,7 +114,7 @@ public class SeePvPArea extends JavaPlugin implements Listener {
     public void reloadConfiguration() {
         reloadConfig();
         this.config = getConfig();
-        getLogger().info("");
+        getLogger().info("Конфигурация перезагружена!");
     }
 
     private void setupDatabase() {
@@ -185,9 +184,10 @@ public class SeePvPArea extends JavaPlugin implements Listener {
 
     private void sendRelogEnterMessage(Player player) {
         if (this.config.getBoolean("settings.anti_relog.relog_entrance.Title.enable"))
-            player.sendTitle(this.config.getString("settings.anti_relog.relog_entrance.Title.Title"), this.config.getString("settings.anti_relog.relog_entrance.Title.SubTitle"), 10, 70, 20);
+            player.sendTitle(color(this.config.getString("settings.anti_relog.relog_entrance.Title.Title")),
+                    color(this.config.getString("settings.anti_relog.relog_entrance.Title.SubTitle")), 10, 70, 20);
         if (this.config.getBoolean("settings.anti_relog.relog_entrance.Message.enable"))
-            for (String line : this.config.getStringList("settings.anti_relog.relog_entrance.Message.Message"))
+            for (String line : color(this.config.getStringList("settings.anti_relog.relog_entrance.Message.Message")))
                 player.sendMessage(line);
     }
 
@@ -207,38 +207,57 @@ public class SeePvPArea extends JavaPlugin implements Listener {
 
     private void sendRelogExitMessage(Player player) {
         if (this.config.getBoolean("settings.anti_relog.relog_exit.Title.enable"))
-            player.sendTitle(this.config.getString("settings.anti_relog.relog_exit.Title.Title"), this.config.getString("settings.anti_relog.relog_exit.Title.SubTitle"), 10, 70, 20);
+            player.sendTitle(color(this.config.getString("settings.anti_relog.relog_exit.Title.Title")),
+                    color(this.config.getString("settings.anti_relog.relog_exit.Title.SubTitle")), 10, 70, 20);
         if (this.config.getBoolean("settings.anti_relog.relog_exit.BossBar.enable"))
-            player.sendMessage(this.config.getString("settings.anti_relog.relog_exit.BossBar.BossBar"));
+            player.sendMessage(color(this.config.getString("settings.anti_relog.relog_exit.BossBar.BossBar")));
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (this.combatPlayers.containsKey(player.getUniqueId())) {
+        if (isInCombat(player)) {
             player.setHealth(0.0D);
-            this.combatPlayers.remove(player.getUniqueId());
+            removeCombatData(player);
+        }
+    }
+
+    private void removeCombatData(Player player) {
+        UUID playerId = player.getUniqueId();
+        combatPlayers.remove(playerId);
+        Map<UUID, Long> opponents = combatLogs.remove(playerId);
+        if (opponents != null) {
+            for (UUID opponentId : opponents.keySet()) {
+                Map<UUID, Long> opponentLogs = combatLogs.get(opponentId);
+                if (opponentLogs != null) {
+                    opponentLogs.remove(playerId);
+                    if (opponentLogs.isEmpty()) {
+                        combatLogs.remove(opponentId);
+                    }
+                }
+            }
         }
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (!this.combatPlayers.containsKey(player.getUniqueId()))
+        if (!isInCombat(player))
             return;
-        switch (event.getMaterial()) {
-            case GOLDEN_APPLE:
-                checkAndCancel(event, this.goldenAppleDelays, this.config.getInt("settings.anti_relog.delays.golden_apple"));
-                break;
-            case ENCHANTED_GOLDEN_APPLE:
-                checkAndCancel(event, this.enchantedGoldenAppleDelays, this.config.getInt("settings.anti_relog.delays.enchanted_golden_apple"));
-                break;
-            case CHORUS_FRUIT:
-                checkAndCancel(event, this.chorusFruitDelays, this.config.getInt("settings.anti_relog.delays.chorus_fruit"));
-                break;
-            case ENDER_PEARL:
-                checkAndCancel(event, this.enderPearlDelays, this.config.getInt("settings.anti_relog.delays.ender_pearl"));
-                break;
+
+        Material material = event.getMaterial();
+        String materialName = material.name().toLowerCase();
+
+        if (materialName.contains("golden_apple")) {
+            if (materialName.contains("enchanted")) {
+                checkAndCancel(event, enchantedGoldenAppleDelays, config.getInt("settings.anti_relog.delays.enchanted_golden_apple", 10));
+            } else {
+                checkAndCancel(event, goldenAppleDelays, config.getInt("settings.anti_relog.delays.golden_apple", 10));
+            }
+        } else if (materialName.contains("chorus")) {
+            checkAndCancel(event, chorusFruitDelays, config.getInt("settings.anti_relog.delays.chorus_fruit", 10));
+        } else if (materialName.contains("ender_pearl")) {
+            checkAndCancel(event, enderPearlDelays, config.getInt("settings.anti_relog.delays.ender_pearl", 10));
         }
     }
 
@@ -249,7 +268,7 @@ public class SeePvPArea extends JavaPlugin implements Listener {
             long lastUse = delayMap.get(player.getUniqueId());
             if (currentTime - lastUse < delaySeconds * 1000L) {
                 event.setCancelled(true);
-                player.sendMessage("&cВы можете использовать это только раз в " + delaySeconds + " секунд в бою!");
+                player.sendMessage(color("&cВы можете использовать это только раз в " + delaySeconds + " секунд в бою!"));
                 return;
             }
         }
@@ -270,6 +289,7 @@ public class SeePvPArea extends JavaPlugin implements Listener {
         return this.config;
     }
 
+    @Override
     public void onDisable() {
         SeePvPAreaProvider.unregisterAPI(this);
         try {

@@ -18,22 +18,22 @@ public class PvPExitCommand implements TabExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(this.plugin.color("&cЭта команла только для игроков!"));
+            sender.sendMessage(plugin.color("&cЭта команда только для игроков!"));
             return true;
         }
         Player player = (Player)sender;
-        FileConfiguration config = this.plugin.getConfig();
-        if (config.getBoolean("settings.exit.checks.anti_relog_check.enable") && this.plugin
+        FileConfiguration config = plugin.getConfig();
+        if (config.getBoolean("settings.exit.checks.anti_relog_check.enable") && plugin
                 .isInCombat(player) && config
                 .getBoolean("settings.exit.checks.anti_relog_check.pvp_mode")) {
-            player.sendMessage(this.plugin.color(config
+            player.sendMessage(plugin.color(config
                     .getStringList("settings.exit.checks.anti_relog_check.error-message").get(0)));
             sendDeclinedMessage(player, config);
             return true;
         }
-        Location location = this.plugin.getLocation("pvpext");
+        Location location = plugin.getLocation("pvpext");
         if (location == null) {
-            player.sendMessage(this.plugin.color("&cТочка выхода с арены не установлена!"));
+            player.sendMessage(plugin.color("&cТочка выхода с арены не установлена!"));
             return true;
         }
         player.teleport(location);
@@ -43,26 +43,26 @@ public class PvPExitCommand implements TabExecutor {
 
     private void sendDeclinedMessage(Player player, FileConfiguration config) {
         if (config.getBoolean("settings.exit.declined.Message.enable"))
-            this.plugin.color(config.getStringList("settings.exit.declined.Message.Message"))
+            plugin.color(config.getStringList("settings.exit.declined.Message.Message"))
                     .forEach(player::sendMessage);
         if (config.getBoolean("settings.exit.declined.Title.enable"))
-            player.sendTitle(this.plugin
-                    .color(config.getString("settings.exit.declined.Title.Title")), this.plugin
+            player.sendTitle(plugin
+                    .color(config.getString("settings.exit.declined.Title.Title")), plugin
                     .color(config.getString("settings.exit.declined.Title.SubTitle")), 10, 70, 20);
         if (config.getBoolean("settings.exit.declined.BossBar.enable"))
-            player.sendMessage(this.plugin.color(config.getString("settings.exit.declined.BossBar.BossBar")));
+            player.sendMessage(plugin.color(config.getString("settings.exit.declined.BossBar.BossBar")));
     }
 
     private void sendAcceptedMessage(Player player, FileConfiguration config) {
         if (config.getBoolean("settings.exit.accepted.Message.enable"))
-            this.plugin.color(config.getStringList("settings.exit.accepted.Message.Message"))
+            plugin.color(config.getStringList("settings.exit.accepted.Message.Message"))
                     .forEach(player::sendMessage);
         if (config.getBoolean("settings.exit.accepted.Title.enable"))
-            player.sendTitle(this.plugin
-                    .color(config.getString("settings.exit.accepted.Title.Title")), this.plugin
+            player.sendTitle(plugin
+                    .color(config.getString("settings.exit.accepted.Title.Title")), plugin
                     .color(config.getString("settings.exit.accepted.Title.SubTitle")), 10, 70, 20);
         if (config.getBoolean("settings.exit.accepted.BossBar.enable"))
-            player.sendMessage(this.plugin.color(config.getString("settings.exit.accepted.BossBar.BossBar")));
+            player.sendMessage(plugin.color(config.getString("settings.exit.accepted.BossBar.BossBar")));
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {

@@ -21,18 +21,18 @@ public class PvPEnterCommand implements TabExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(this.plugin.color("&cЭта команда только для игроков!"));
+            sender.sendMessage(plugin.color("&cЭта команда только для игроков!"));
             return true;
         }
         Player player = (Player)sender;
-        FileConfiguration config = this.plugin.getConfig();
+        FileConfiguration config = plugin.getConfig();
         if (!checkRequirements(player, config)) {
             sendDeclinedMessage(player, config);
             return true;
         }
-        Location location = this.plugin.getLocation("pvpent");
+        Location location = plugin.getLocation("pvpent");
         if (location == null) {
-            player.sendMessage(this.plugin.color("&cТочка входа на арену не установлена!"));
+            player.sendMessage(plugin.color("&cТочка входа на арену не установлена!"));
             return true;
         }
         player.teleport(location);
@@ -68,26 +68,26 @@ public class PvPEnterCommand implements TabExecutor {
 
     private void sendDeclinedMessage(Player player, FileConfiguration config) {
         if (config.getBoolean("settings.entrance.declined.Message.enable"))
-            this.plugin.color(config.getStringList("settings.entrance.declined.Message.Message"))
+            plugin.color(config.getStringList("settings.entrance.declined.Message.Message"))
                     .forEach(player::sendMessage);
         if (config.getBoolean("settings.entrance.declined.Title.enable"))
-            player.sendTitle(this.plugin
-                    .color(config.getString("settings.entrance.declined.Title.Title")), this.plugin
+            player.sendTitle(plugin
+                    .color(config.getString("settings.entrance.declined.Title.Title")), plugin
                     .color(config.getString("settings.entrance.declined.Title.SubTitle")), 10, 70, 20);
         if (config.getBoolean("settings.entrance.declined.BossBar.enable"))
-            player.sendMessage(this.plugin.color(config.getString("settings.entrance.declined.BossBar.BossBar")));
+            player.sendMessage(plugin.color(config.getString("settings.entrance.declined.BossBar.BossBar")));
     }
 
     private void sendAcceptedMessage(Player player, FileConfiguration config) {
         if (config.getBoolean("settings.entrance.accepted.Message.enable"))
-            this.plugin.color(config.getStringList("settings.entrance.accepted.Message.Message"))
+            plugin.color(config.getStringList("settings.entrance.accepted.Message.Message"))
                     .forEach(player::sendMessage);
         if (config.getBoolean("settings.entrance.accepted.Title.enable"))
-            player.sendTitle(this.plugin
-                    .color(config.getString("settings.entrance.accepted.Title.Title")), this.plugin
+            player.sendTitle(plugin
+                    .color(config.getString("settings.entrance.accepted.Title.Title")), plugin
                     .color(config.getString("settings.entrance.accepted.Title.SubTitle")), 10, 70, 20);
         if (config.getBoolean("settings.entrance.accepted.BossBar.enable"))
-            player.sendMessage(this.plugin.color(config.getString("settings.entrance.accepted.BossBar.BossBar")));
+            player.sendMessage(plugin.color(config.getString("settings.entrance.accepted.BossBar.BossBar")));
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {

@@ -18,12 +18,12 @@ public class AntiRelogCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!sender.hasPermission("seepvparea.admin")) {
-            sender.sendMessage(this.plugin.color("&cУ вас нет прав на эту команду!"));
+            sender.sendMessage(plugin.color("&cУ вас нет прав на эту команду!"));
             return true;
         }
 
         if (args.length != 3 || !args[0].equalsIgnoreCase("enable")) {
-            sender.sendMessage(this.plugin.color("&cИспользование: /seepvparea antirelog enable <игрок1> <игрок2>"));
+            sender.sendMessage(plugin.color("&cИспользование: /seepvparea antirelog enable <игрок1> <игрок2>"));
             return true;
         }
 
@@ -31,13 +31,13 @@ public class AntiRelogCommand implements TabExecutor {
         Player player2 = Bukkit.getPlayer(args[2]);
 
         if (player1 == null || player2 == null) {
-            sender.sendMessage(this.plugin.color("&cОдин из игроков не найден!"));
+            sender.sendMessage(plugin.color("&cОдин из игроков не найден!"));
             return true;
         }
 
-        this.plugin.setPlayersInCombat(player1, player2);
-        sender.sendMessage(this.plugin.color(String.format("&aАнтирелог установлен между %s и %s на %d секунд",
-                player1.getName(), player2.getName(), this.plugin.getAntiRelogDuration())));
+        plugin.setPlayersInCombat(player1, player2);
+        sender.sendMessage(plugin.color(String.format("&aАнтирелог установлен между %s и %s на %d секунд",
+                player1.getName(), player2.getName(), plugin.getAntiRelogDuration())));
         return true;
     }
 

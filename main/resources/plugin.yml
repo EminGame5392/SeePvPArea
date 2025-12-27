@@ -1,5 +1,5 @@
 name: SeePvPArea
-version: '1.2'
+version: '1.2.1'
 main: ru.gortexdev.seepvparea.SeePvPArea
 api-version: '1.16'
 load: STARTUP

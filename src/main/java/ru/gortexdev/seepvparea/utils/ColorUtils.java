@@ -9,28 +9,42 @@ import org.bukkit.Bukkit;
 
 public class ColorUtils {
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
+    private static final boolean SUPPORTS_HEX = checkHexSupport();
 
-    private static final boolean SUPPORTS_HEX = (Bukkit.getVersion().contains("1.16") ||
-            Bukkit.getVersion().contains("1.17") ||
-            Bukkit.getVersion().contains("1.18") ||
-            Bukkit.getVersion().contains("1.19"));
+    private static boolean checkHexSupport() {
+        try {
+            String version = Bukkit.getVersion();
+            return version.contains("1.16") || version.contains("1.17") ||
+                    version.contains("1.18") || version.contains("1.19") ||
+                    version.contains("1.20");
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public static String color(String message) {
-        if (message == null)
-            return "";
+        if (message == null) return "";
+
+        String colored = ChatColor.translateAlternateColorCodes('&', message);
+
         if (SUPPORTS_HEX) {
-            Matcher matcher = HEX_PATTERN.matcher(message);
-            StringBuffer buffer = new StringBuffer();
-            while (matcher.find())
-                matcher.appendReplacement(buffer,
-                        ChatColor.of("#" + matcher.group(1)).toString());
-            message = matcher.appendTail(buffer).toString();
+            try {
+                Matcher matcher = HEX_PATTERN.matcher(colored);
+                StringBuffer buffer = new StringBuffer();
+                while (matcher.find()) {
+                    String hex = matcher.group(1);
+                    matcher.appendReplacement(buffer, ChatColor.of("#" + hex).toString());
+                }
+                colored = matcher.appendTail(buffer).toString();
+            } catch (Exception e) {
+            }
         }
-        return ChatColor.translateAlternateColorCodes('&', message);
+
+        return colored;
     }
 
     public static List<String> color(List<String> messages) {
-        return (List<String>)messages.stream()
+        return messages.stream()
                 .map(ColorUtils::color)
                 .collect(Collectors.toList());
     }

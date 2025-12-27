@@ -84,7 +84,7 @@ settings:
           - '&aВы успешно вышли с арены!'
         enable: true
   anti_relog:
-    duration: 30 # Длительность антирелога в секундах
+    duration: 30
     disabled_regions:
       - spawn
     delays:
